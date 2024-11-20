@@ -1,9 +1,11 @@
 <script>
-	import { text } from '@sveltejs/kit';
 	import { Mic, Pause, Play, MessageCircle, ChevronRight } from 'lucide-svelte';
+	import Loader from '$lib/Loader.svelte';
+	import { text } from '@sveltejs/kit';
 	import { fly } from 'svelte/transition';
 	import Toastify from 'toastify-js';
 	import 'toastify-js/src/toastify.css';
+	import { globalLoader } from '$lib/loader.js';
 
 	let { data } = $props();
 
@@ -32,29 +34,32 @@
 	}
 
 	async function handleNext() {
-		const updates = {
-			progress: progress + 10
-		};
-		const res = await fetch('/api/db', {
-			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(updates)
-		});
-		const response = await res.json();
-		data = response;
-	}
-
-	async function handleChatSubmit(e) {
 		try {
-			e.preventDefault();
-			console.log('Chat message:', chatMessage);
-			chatMessage = '';
+			globalLoader.set(true);
+			const updates = {
+				progress: progress + 10 > 100 ? 100 : progress + 10
+			};
+			const res = await fetch('/api/db', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(updates)
+			});
+			const response = await res.json();
+			data = response;
 		} catch (error) {
 			console.log(error);
 			Toastify({
 				text: 'Error saving data.'
 			}).showToast();
+		} finally {
+			globalLoader.set(false);
 		}
+	}
+
+	async function handleChatSubmit(e) {
+		e.preventDefault();
+		console.log('Chat message:', chatMessage);
+		chatMessage = '';
 	}
 </script>
 
