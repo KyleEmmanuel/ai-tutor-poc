@@ -101,7 +101,8 @@
 				<Play size={24} />
 			{/if}
 		</button>
-		<div class="h-2 w-full rounded-full bg-gray-200">
+		<p class="absolute bottom-9 left-1/2 flex -translate-x-1/2">{progress}%</p>
+		<div class=" h-2 w-full rounded-full bg-gray-200">
 			<div class="h-2 rounded-full bg-blue-500" style="width: {progress}%;"></div>
 		</div>
 	</div>
