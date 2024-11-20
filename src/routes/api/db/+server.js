@@ -1,4 +1,4 @@
-import { readJson, updateJson } from '$lib/server/jsonHandler';
+import { readJson, updateJson } from '$lib/server/jsonhandler';
 
 export async function GET() {
     try {
