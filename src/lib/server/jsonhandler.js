@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
+import path from 'path';
 
-const filePath = './src/lib/server/db.json'; // Adjust the path based on your directory structure
+const filePath = path.resolve('static/db.json') // Adjust the path based on your directory structure
 
 // Function to read JSON data
 export async function readJson() {
