@@ -4,22 +4,40 @@
 	import Toastify from 'toastify-js';
 	import 'toastify-js/src/toastify.css';
 	import { globalLoader } from '$lib/loader.js';
-	import { readJson, updateJson } from '$lib/db.js';
-	let initialLoading = $state(true);
+	import Step1 from '$lib/components/Step1.svelte';
+	import Step2 from '$lib/components/Step2.svelte';
+	import Sidebar from '$lib/components/Sidebar.svelte';
+	import { dbStore, stepsStore } from '$lib/db.js';
+	import { onDestroy } from 'svelte';
 
 	let isPlaying = $state(true);
 	let isMicOn = $state(false);
-	let progress = $state(0); // Example progress percentage
 	let isChatOpen = $state(false);
 	let chatMessage = $state('');
+	let steps = [
+		{ number: 1, step: 'Setting the stage', done: false },
+		{ number: 2, step: 'Reflection', done: false }
+	];
+	stepsStore.set(steps);
+	resetDb();
+	let progress = $state(0);
 	let currentStep = $state(1);
 
-	$effect(() => {
-		const data = readJson();
-		progress = data.progress;
-		currentStep = data.currentStep;
-		initialLoading = false;
+	const unsub = dbStore.subscribe((val) => {
+		currentStep = val.currentStep;
 	});
+
+	stepsStore.subscribe((val) => {
+		console.log({ val });
+		const doneSteps = val.filter((step) => {
+			return step.done === true;
+		});
+		console.log({ doneSteps });
+		const latestProgress = (doneSteps.length / val.length) * 100;
+		progress = latestProgress;
+	});
+
+	onDestroy(unsub);
 
 	function togglePlayPause() {
 		isPlaying = !isPlaying;
@@ -36,12 +54,22 @@
 	async function handleNext() {
 		try {
 			globalLoader.set(true);
+			stepsStore.update((val) => {
+				const updated = val.map((step) => {
+					if (step.number == currentStep) {
+						step.done = true;
+						return step;
+					}
+					return step;
+				});
+				return updated;
+			});
+			const updatedStep = currentStep + 1;
 			const updates = {
-				progress: progress + 10 > 100 ? 100 : progress + 10
+				currentStep: updatedStep
 			};
-			const response = updateJson(updates);
-			progress = response.progress;
-			currentStep = response.currentStep;
+			console.log(currentStep);
+			dbStore.set(updates);
 		} catch (error) {
 			console.log(error);
 			Toastify({
@@ -57,80 +85,99 @@
 		console.log('Chat message:', chatMessage);
 		chatMessage = '';
 	}
+
+	function resetDb() {
+		dbStore.set({ currentStep: 1 });
+		stepsStore.update((val) => {
+			const update = val.map((step) => {
+				step.done = false;
+				return step;
+			});
+			return update;
+		});
+		console.log($dbStore);
+	}
+
+	const stepComponents = [null, Step1, Step2];
+	// localStorage.removeItem('db');
+	let StepComponent = $derived(stepComponents[currentStep]);
 </script>
 
-{#if !initialLoading}
-	<div class="relative min-h-screen bg-gray-100 p-8">
-		<!-- Course content -->
-		<div class="mb-16">
-			<h1 class="mb-4 text-3xl font-bold">Time management in relevance to DISC styles.</h1>
-			<p>
-				Time management is crucial for productivity and efficiency. It relates to DISC styles as
-				individuals with dominant (D) and conscientious (C) styles are more inclined towards
-				effective time management. Emotional intelligence plays a role in time management through
-				self-awareness, self-regulation, and empathy.
-			</p>
-		</div>
+<div class="relative min-h-screen bg-gray-100 p-8">
+	<!-- Course content -->
+	<StepComponent />
 
-		<!-- Mic button and voice-over message -->
-		<div class="absolute right-8 top-8 flex items-center space-x-2">
-			{#if isMicOn}
-				<span in:fly class="text-sm font-medium text-blue-500">Voice over enabled</span>
-			{/if}
-			<button onclick={toggleMic} class="button mic {isMicOn ? 'active' : ''}">
-				<Mic size={24} />
-			</button>
-		</div>
-
-		<!-- next button -->
-		<button onclick={handleNext} class="button next">
-			<ChevronRight size={24} />
-		</button>
-
-		<!-- Progress bar and play/pause button -->
-		<div
-			class="absolute bottom-8 left-1/2 flex w-2/3 -translate-x-1/2 items-center justify-center space-x-4"
-		>
-			<button onclick={togglePlayPause} class="button pause-resume">
-				{#if isPlaying}
-					<Pause size={24} />
-				{:else}
-					<Play size={24} />
-				{/if}
-			</button>
-			<p class="absolute bottom-9 left-1/2 flex -translate-x-1/2">{progress}%</p>
-			<div class=" h-2 w-full rounded-full bg-gray-200">
-				<div class="h-2 rounded-full bg-blue-500" style="width: {progress}%;"></div>
-			</div>
-		</div>
-
-		<!-- Chatbot icon and chat box -->
-		<div class="absolute bottom-20 right-20">
-			{#if isChatOpen}
-				<div class="mb-2 h-[400px] w-[400px] rounded-lg bg-white p-4 shadow-lg" in:fly>
-					<form onsubmit={handleChatSubmit} class="flex h-full flex-col">
-						<textarea
-							type="text"
-							bind:value={chatMessage}
-							class="mb-2 w-full grow rounded border p-2"
-							placeholder="Type your message..."
-						></textarea>
-						<button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white"> Send </button>
-					</form>
-				</div>
-			{/if}
-		</div>
-		<button
-			onclick={toggleChatbox}
-			class="chat button transition-all"
-			style="position: absolute; bottom: 2.5rem; right: 2.5rem;"
-		>
-			<MessageCircle size={24} />
+	<!-- Mic button and voice-over message -->
+	<div class="absolute right-8 top-8 flex items-center space-x-2">
+		{#if isMicOn}
+			<span in:fly class="text-sm font-medium text-blue-500">Voice over enabled</span>
+		{/if}
+		<button onclick={toggleMic} class="button mic {isMicOn ? 'active' : ''}">
+			<Mic size={24} />
 		</button>
 	</div>
-{/if}
+
+	<!-- next button -->
+	<button onclick={handleNext} class="button next">
+		<ChevronRight size={24} />
+	</button>
+
+	<!-- Progress bar and play/pause button -->
+	<div
+		class="absolute bottom-8 left-1/2 flex w-2/3 -translate-x-1/2 items-center justify-center space-x-4"
+	>
+		<button onclick={togglePlayPause} class="button pause-resume">
+			{#if isPlaying}
+				<Pause size={24} />
+			{:else}
+				<Play size={24} />
+			{/if}
+		</button>
+		<p class="absolute bottom-9 left-1/2 flex -translate-x-1/2">{progress}%</p>
+		<div class=" h-2 w-full rounded-full bg-gray-200">
+			<div class="h-2 rounded-full bg-blue-500" style="width: {progress}%;"></div>
+		</div>
+		<!-- Reset button -->
+		<button onclick={resetDb} class="button reset bg-red-500 text-white hover:bg-red-600">
+			Reset
+		</button>
+	</div>
+
+	<!-- Chatbot icon and chat box -->
+	<div class="absolute bottom-20 right-20">
+		{#if isChatOpen}
+			<div class="mb-2 h-[400px] w-[400px] rounded-lg bg-white p-4 shadow-lg" in:fly>
+				<form onsubmit={handleChatSubmit} class="flex h-full flex-col">
+					<textarea
+						type="text"
+						bind:value={chatMessage}
+						class="mb-2 w-full grow rounded border p-2"
+						placeholder="Type your message..."
+					></textarea>
+					<button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white"> Send </button>
+				</form>
+			</div>
+		{/if}
+	</div>
+	<button
+		onclick={toggleChatbox}
+		class="chat button transition-all"
+		style="position: absolute; bottom: 2.5rem; right: 2.5rem;"
+	>
+		<MessageCircle size={24} />
+	</button>
+</div>
+<Sidebar {steps} {currentStep} />
 
 <style>
+	.reset {
+		padding: 0.5rem 1.25rem !important;
+		border-radius: 0.375rem; /* Slightly rounded corners */
+	}
+
+	.reset:hover {
+		background-color: #dc2626; /* Hover state for Reset button */
+	}
 	/* Common button styles */
 	.button {
 		position: relative;
