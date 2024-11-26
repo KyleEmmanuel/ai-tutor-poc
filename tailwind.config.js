@@ -8,8 +8,11 @@ export default {
 	content: ['./src/**/*.{html,js,svelte,ts}'],
 
 	theme: {
+		fontFamily: {
+			'sans': ['Helvetica', 'Arial', 'sans-serif'],
+		},
 		extend: {}
 	},
 
-	plugins: [typography, forms, containerQueries, aspectRatio]
+	plugins: [typography, forms, containerQueries, aspectRatio, require('daisyui'),]
 };

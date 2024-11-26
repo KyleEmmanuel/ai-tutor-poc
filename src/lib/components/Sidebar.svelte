@@ -2,16 +2,11 @@
 	import { Menu, X } from 'lucide-svelte';
 	import SidebarStep from './SidebarStep.svelte';
 	import { stepsStore } from '$lib/db.js';
-	let { steps, currentStep } = $props();
+	let { currentStep } = $props();
+	let steps = $state($stepsStore);
 	let expanded = $state(true);
 	function openDrawer() {
 		expanded = !expanded;
-	}
-	function checkIsDone(stepNumber) {
-		if ($stepsStore.find((step) => step.number === stepNumber)?.done === true) {
-			return true;
-		}
-		return false;
 	}
 </script>
 
@@ -27,12 +22,7 @@
 		</button>
 	</div>
 	{#each steps as step, index (step.number)}
-		<SidebarStep
-			isDone={checkIsDone(step.number)}
-			isCurrent={currentStep === step.number}
-			number={step.number}
-			step={step.step}
-		/>
+		<SidebarStep isCurrent={currentStep === step.number} number={step.number} step={step.step} />
 	{/each}
 </aside>
 

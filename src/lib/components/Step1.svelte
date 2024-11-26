@@ -1,11 +1,11 @@
 <script>
 	import Toastify from 'toastify-js';
-	import { askStep1 } from '$lib/api.js';
 	import { phaseHeaders } from '$lib/appGlobals.js';
 	import { globalLoader } from '$lib/loader.js';
 	import { concurrent } from 'svelte-typewriter';
 	import { API_URL } from '$lib/constants.js';
 	import { safeJsonParse } from '$lib/utils.js';
+	import { plain_text_assistant_id } from '$lib/constants.js';
 	let message = $state('');
 	const prompt = `the importance of time management and how it relates to DISC styles and Emotional Intelligence. 
         `;
@@ -17,7 +17,9 @@
 		try {
 			if (typeof EventSource !== 'undefined' && false) {
 				globalLoader.set(true);
-				source = new EventSource(`${API_URL}/step1?prompt=${prompt}`);
+				source = new EventSource(
+					`${API_URL}/ask_ai_stream?prompt=${prompt}&assistant_id=${plain_text_assistant_id}`
+				);
 				source.onmessage = (event) => {
 					let streamed_data = JSON.parse(event.data);
 

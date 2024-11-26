@@ -3,7 +3,7 @@
 	import { fly } from 'svelte/transition';
 	import Toastify from 'toastify-js';
 	import 'toastify-js/src/toastify.css';
-	import { globalLoader } from '$lib/loader.js';
+	import { disableNext, globalLoader } from '$lib/loader.js';
 	import Step1 from '$lib/components/Step1.svelte';
 	import Step2 from '$lib/components/Step2.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
@@ -28,11 +28,9 @@
 	});
 
 	stepsStore.subscribe((val) => {
-		console.log({ val });
 		const doneSteps = val.filter((step) => {
 			return step.done === true;
 		});
-		console.log({ doneSteps });
 		const latestProgress = (doneSteps.length / val.length) * 100;
 		progress = latestProgress;
 	});
@@ -68,15 +66,14 @@
 			const updates = {
 				currentStep: updatedStep
 			};
-			console.log(currentStep);
 			dbStore.set(updates);
 		} catch (error) {
-			console.log(error);
 			Toastify({
 				text: 'Error saving data.'
 			}).showToast();
 		} finally {
 			globalLoader.set(false);
+			console.log($stepsStore);
 		}
 	}
 
@@ -95,7 +92,6 @@
 			});
 			return update;
 		});
-		console.log($dbStore);
 	}
 
 	const stepComponents = [null, Step1, Step2];
@@ -103,7 +99,7 @@
 	let StepComponent = $derived(stepComponents[currentStep]);
 </script>
 
-<div class="relative min-h-screen bg-gray-100 p-8">
+<div class="relative min-h-screen bg-gray-100 p-8 pl-20 pr-24 font-sans">
 	<!-- Course content -->
 	<StepComponent />
 
@@ -118,9 +114,11 @@
 	</div>
 
 	<!-- next button -->
-	<button onclick={handleNext} class="button next">
-		<ChevronRight size={24} />
-	</button>
+	{#if !$globalLoader && !$disableNext}
+		<button onclick={handleNext} class="button next">
+			<ChevronRight size={24} />
+		</button>
+	{/if}
 
 	<!-- Progress bar and play/pause button -->
 	<div
@@ -167,7 +165,7 @@
 		<MessageCircle size={24} />
 	</button>
 </div>
-<Sidebar {steps} {currentStep} />
+<Sidebar {currentStep} />
 
 <style>
 	.reset {

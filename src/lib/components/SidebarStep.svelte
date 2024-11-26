@@ -1,9 +1,25 @@
 <script>
-	import { dbStore } from '$lib/db.js';
-	import { Check } from 'lucide-svelte';
+	import Toastify from 'toastify-js';
+	import { dbStore, stepsStore } from '$lib/db.js';
+	import { Check, Lock } from 'lucide-svelte';
+	import { derived } from 'svelte/store';
+	import { onDestroy } from 'svelte';
 
-	let { isDone, isCurrent, number, step } = $props();
+	let { isCurrent, number, step } = $props();
+	let isDone = $state();
+	const unsub = stepsStore.subscribe((val) => {
+		isDone = val.find((step) => step.number === number)?.done === true;
+	});
+
+	onDestroy(unsub);
+
 	function clickFunction() {
+		if (!isDone) {
+			Toastify({
+				text: 'This content is locked.'
+			}).showToast();
+			return;
+		}
 		const data = {
 			currentStep: number
 		};
@@ -19,10 +35,16 @@
 		? 'bg-gray-300'
 		: ''}"
 >
-	{#if isDone}
-		<i class="absolute right-2 top-2">
-			<Check size={20} />
-		</i>
-	{/if}
+	<!-- {#if isDone} -->
+	<i class="absolute right-2 top-2">
+		{#key isDone}
+			{#if isDone}
+				<Check size={20} />
+			{:else if number !== 1 && !isCurrent}
+				<Lock size={20} />
+			{/if}
+		{/key}
+	</i>
+	<!-- {/if} -->
 	<p>{number}. {step}</p>
 </div>

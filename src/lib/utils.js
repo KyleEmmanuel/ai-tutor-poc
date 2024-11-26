@@ -6,3 +6,7 @@ export function safeJsonParse(input) {
         return {};
     }
 }
+
+export function waitFor(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
