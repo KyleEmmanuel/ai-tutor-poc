@@ -3,7 +3,8 @@
 	import { ask_ai_no_thread } from '$lib/api.js';
 	import { phaseHeaders } from '$lib/appGlobals.js';
 	import { globalLoader } from '$lib/loader.js';
-	import { waitFor } from '$lib/utils.js';
+	import { handleNext, waitFor } from '$lib/utils.js';
+	import { dbStore } from '$lib/db.js';
 	let questions = [
 		'What do you think are your strengths when it comes to managing your time?',
 		'On what aspects of your time management do you think need improving?',
@@ -38,12 +39,13 @@
 			console.log(finalResponse);
 			if (result) {
 				Toastify({
-					text: message,
+					text: `Good job! ${message}`,
 					position: 'center',
 					close: true,
 					duration: -1
 				}).showToast();
-				await waitFor(3000);
+				// await waitFor(3000);
+				handleNext($dbStore.currentStep);
 				// implement next here
 			} else {
 				Toastify({
@@ -65,7 +67,7 @@
 </script>
 
 <div class="mb-16 flex flex-col gap-4">
-	<h1 class="mb-4 text-3xl font-bold">{phaseHeaders[2]}</h1>
+	<h1 class="mb-4 text-3xl font-bold">{phaseHeaders[1]}</h1>
 	<label for="question1">{questions[0]}</label>
 	<textarea name="question1" id="question1" bind:value={answer1}></textarea>
 	<label for="question2">{questions[1]}</label>

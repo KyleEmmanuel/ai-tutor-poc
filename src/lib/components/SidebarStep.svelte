@@ -8,7 +8,15 @@
 	let { isCurrent, number, step } = $props();
 	let isDone = $state();
 	const unsub = stepsStore.subscribe((val) => {
-		isDone = val.find((step) => step.number === number)?.done === true;
+		const keys = Object.keys(val);
+		for (const key of keys) {
+			let currentStepObject = val[key].find((step) => step.number === number);
+			if (currentStepObject) {
+				isDone = currentStepObject?.done ? true : false;
+				break;
+			}
+		}
+		// isDone = val.find((step) => step.number === number)?.done === true;
 	});
 
 	onDestroy(unsub);

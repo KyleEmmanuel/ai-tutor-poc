@@ -21,9 +21,19 @@
 			<X size={16} />
 		</button>
 	</div>
-	{#each steps as step, index (step.number)}
-		<SidebarStep isCurrent={currentStep === step.number} number={step.number} step={step.step} />
+	{#each Object.keys(steps) as step, index (step)}
+		<h1 class="py-2 text-left font-bold">{step}</h1>
+		{#each steps[step] as sidebarStep}
+			<SidebarStep
+				isCurrent={currentStep === sidebarStep.number}
+				number={sidebarStep.number}
+				step={sidebarStep.step}
+			/>
+		{/each}
 	{/each}
+	<!-- {#each steps as step, index (step.number)}
+		<SidebarStep isCurrent={currentStep === step.number} number={step.number} step={step.step} />
+	{/each} -->
 </aside>
 
 <button

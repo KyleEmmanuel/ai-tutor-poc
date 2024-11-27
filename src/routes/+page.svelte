@@ -1,6 +1,6 @@
 <script>
 	import { Mic, Pause, Play, MessageCircle, ChevronRight } from 'lucide-svelte';
-	import { fly } from 'svelte/transition';
+	import { fly, fade, slide } from 'svelte/transition';
 	import Toastify from 'toastify-js';
 	import 'toastify-js/src/toastify.css';
 	import { disableNext, globalLoader } from '$lib/loader.js';
@@ -9,15 +9,24 @@
 	import Sidebar from '$lib/components/Sidebar.svelte';
 	import { dbStore, stepsStore } from '$lib/db.js';
 	import { onDestroy } from 'svelte';
+	import Step3 from '$lib/components/Step3.svelte';
+	import { phaseHeaders } from '$lib/appGlobals.js';
 
 	let isPlaying = $state(true);
 	let isMicOn = $state(false);
 	let isChatOpen = $state(false);
 	let chatMessage = $state('');
-	let steps = [
-		{ number: 1, step: 'Setting the stage', done: false },
-		{ number: 2, step: 'Reflection', done: false }
-	];
+	let steps = {
+		[phaseHeaders[1]]: [
+			{ number: 1, step: 'Setting the stage', done: false },
+			{ number: 2, step: 'Reflection', done: false }
+		],
+		[phaseHeaders[2]]: [
+			{ number: 3, step: 'Understanding DISC styles in Time Management', done: false }
+		],
+		[phaseHeaders[3]]: [],
+		[phaseHeaders[4]]: []
+	};
 	stepsStore.set(steps);
 	resetDb();
 	let progress = $state(0);
@@ -28,10 +37,18 @@
 	});
 
 	stepsStore.subscribe((val) => {
-		const doneSteps = val.filter((step) => {
-			return step.done === true;
+		const keys = Object.keys(val);
+		let numberOfDoneSteps = 0;
+		let totalSteps = 0;
+		keys.forEach((key) => {
+			val[key].forEach((step) => {
+				if (step.done === true) {
+					numberOfDoneSteps += 1;
+				}
+				totalSteps += 1;
+			});
 		});
-		const latestProgress = (doneSteps.length / val.length) * 100;
+		const latestProgress = (numberOfDoneSteps / totalSteps) * 100;
 		progress = latestProgress;
 	});
 
@@ -53,14 +70,23 @@
 		try {
 			globalLoader.set(true);
 			stepsStore.update((val) => {
-				const updated = val.map((step) => {
-					if (step.number == currentStep) {
-						step.done = true;
-						return step;
+				const keys = Object.keys(val);
+				keys.forEach((key) => {
+					const indexToUpdate = val[key].findIndex((step) => step.number === currentStep);
+					if (indexToUpdate !== -1) {
+						val[key][indexToUpdate].done = true;
 					}
-					return step;
 				});
-				return updated;
+				return val;
+
+				// const updated = val.map((step) => {
+				// 	if (step.number == currentStep) {
+				// 		step.done = true;
+				// 		return step;
+				// 	}
+				// 	return step;
+				// });
+				// return updated;
 			});
 			const updatedStep = currentStep + 1;
 			const updates = {
@@ -86,22 +112,37 @@
 	function resetDb() {
 		dbStore.set({ currentStep: 1 });
 		stepsStore.update((val) => {
-			const update = val.map((step) => {
-				step.done = false;
-				return step;
+			const keys = Object.keys(val);
+			keys.forEach((key) => {
+				val[key] = val[key].map((step) => {
+					step.done = false;
+					return step;
+				});
 			});
-			return update;
+			return val;
+
+			// const update = val.map((step) => {
+			// 	step.done = false;
+			// 	return step;
+			// });
+			// return update;
 		});
 	}
 
-	const stepComponents = [null, Step1, Step2];
+	const stepComponents = [null, Step1, Step2, Step3];
 	// localStorage.removeItem('db');
 	let StepComponent = $derived(stepComponents[currentStep]);
+	$inspect(currentStep);
 </script>
 
 <div class="relative min-h-screen bg-gray-100 p-8 pl-20 pr-24 font-sans">
 	<!-- Course content -->
+	<!-- Fading Transition for StepComponent -->
+	<!-- {#key currentStep}
+		<div class="step-container" transition:slide={{ duration: 2000 }}> -->
 	<StepComponent />
+	<!-- </div>
+	{/key} -->
 
 	<!-- Mic button and voice-over message -->
 	<div class="absolute right-8 top-8 flex items-center space-x-2">
@@ -131,9 +172,12 @@
 				<Play size={24} />
 			{/if}
 		</button>
-		<p class="absolute bottom-9 left-1/2 flex -translate-x-1/2">{progress}%</p>
+		<p class="absolute bottom-9 left-1/2 flex -translate-x-1/2">{Math.ceil(progress)}%</p>
 		<div class=" h-2 w-full rounded-full bg-gray-200">
-			<div class="h-2 rounded-full bg-blue-500" style="width: {progress}%;"></div>
+			<div
+				class="h-2 rounded-full bg-blue-500 transition-all"
+				style="width: {Math.ceil(progress)}%;"
+			></div>
 		</div>
 		<!-- Reset button -->
 		<button onclick={resetDb} class="button reset bg-red-500 text-white hover:bg-red-600">
@@ -159,7 +203,7 @@
 	</div>
 	<button
 		onclick={toggleChatbox}
-		class="chat button transition-all"
+		class="button chat transition-all"
 		style="position: absolute; bottom: 2.5rem; right: 2.5rem;"
 	>
 		<MessageCircle size={24} />
@@ -168,6 +212,12 @@
 <Sidebar {currentStep} />
 
 <style>
+	.step-container {
+		position: relative;
+		width: 100%;
+		height: 100%;
+		overflow: hidden;
+	}
 	.reset {
 		padding: 0.5rem 1.25rem !important;
 		border-radius: 0.375rem; /* Slightly rounded corners */
