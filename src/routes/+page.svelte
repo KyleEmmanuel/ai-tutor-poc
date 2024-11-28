@@ -11,6 +11,10 @@
 	import { onDestroy } from 'svelte';
 	import Step3 from '$lib/components/Step3.svelte';
 	import { phaseHeaders } from '$lib/appGlobals.js';
+	import Step4 from '$lib/components/Step4.svelte';
+	import Step5 from '$lib/components/Step5.svelte';
+	import Step6 from '$lib/components/Step6.svelte';
+	import Step7 from '$lib/components/Step7.svelte';
 
 	let isPlaying = $state(true);
 	let isMicOn = $state(false);
@@ -22,9 +26,14 @@
 			{ number: 2, step: 'Reflection', done: false }
 		],
 		[phaseHeaders[2]]: [
-			{ number: 3, step: 'Understanding DISC styles in Time Management', done: false }
+			{ number: 3, step: 'Understanding DISC styles in Time Management', done: false },
+			{ number: 4, step: 'Personal Style Assessment', done: false },
+			{ number: 5, step: 'Scenario Application', done: false }
 		],
-		[phaseHeaders[3]]: [],
+		[phaseHeaders[3]]: [
+			{ number: 6, step: 'Practical tips for managing time effectively', done: false },
+			{ number: 7, step: 'Personal Action Plan', done: false }
+		],
 		[phaseHeaders[4]]: []
 	};
 	stepsStore.set(steps);
@@ -110,7 +119,7 @@
 	}
 
 	function resetDb() {
-		dbStore.set({ currentStep: 1 });
+		dbStore.set({ currentStep: 1, discStyle: null });
 		stepsStore.update((val) => {
 			const keys = Object.keys(val);
 			keys.forEach((key) => {
@@ -129,10 +138,9 @@
 		});
 	}
 
-	const stepComponents = [null, Step1, Step2, Step3];
+	const stepComponents = [null, Step1, Step2, Step3, Step4, Step5, Step6, Step7];
 	// localStorage.removeItem('db');
 	let StepComponent = $derived(stepComponents[currentStep]);
-	$inspect(currentStep);
 </script>
 
 <div class="relative min-h-screen bg-gray-100 p-8 pl-20 pr-24 font-sans">
@@ -149,21 +157,25 @@
 		{#if isMicOn}
 			<span in:fly class="text-sm font-medium text-blue-500">Voice over enabled</span>
 		{/if}
-		<button onclick={toggleMic} class="button mic {isMicOn ? 'active' : ''}">
+		<button
+			onclick={toggleMic}
+			class="button mic {isMicOn ? 'active' : ''}"
+			style="position: fixed; top: 1rem; right: 2rem"
+		>
 			<Mic size={24} />
 		</button>
 	</div>
 
 	<!-- next button -->
 	{#if !$globalLoader && !$disableNext}
-		<button onclick={handleNext} class="button next">
+		<button onclick={handleNext} class="button next" style="position: fixed">
 			<ChevronRight size={24} />
 		</button>
 	{/if}
 
 	<!-- Progress bar and play/pause button -->
 	<div
-		class="absolute bottom-8 left-1/2 flex w-2/3 -translate-x-1/2 items-center justify-center space-x-4"
+		class="absolute bottom-4 left-1/2 flex w-2/3 -translate-x-1/2 items-center justify-center space-x-4"
 	>
 		<button onclick={togglePlayPause} class="button pause-resume">
 			{#if isPlaying}
@@ -204,7 +216,7 @@
 	<button
 		onclick={toggleChatbox}
 		class="button chat transition-all"
-		style="position: absolute; bottom: 2.5rem; right: 2.5rem;"
+		style="position: fixed; bottom: 2.5rem; right: 2.5rem;"
 	>
 		<MessageCircle size={24} />
 	</button>

@@ -1,6 +1,7 @@
 import { globalLoader } from "./loader.js";
 import { stepsStore, dbStore } from "./db.js";
 import { API_URL, plain_text_assistant_id } from "./constants.js";
+import tippy from 'tippy.js'
 import Toastify from 'toastify-js'
 
 export function safeJsonParse(input) {
@@ -97,4 +98,15 @@ export async function aiStream(prompt, updateState, setState) {
         }).showToast();
         globalLoader.set(false);
     }
+}
+
+export function addTippy(element, optionsFn) {
+    tippy(element, optionsFn())
+}
+
+export function setDiscStyle(style) {
+    dbStore.update((val) => {
+        val.discStyle = style
+        return val
+    })
 }

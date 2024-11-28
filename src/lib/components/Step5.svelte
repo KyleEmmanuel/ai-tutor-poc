@@ -1,5 +1,4 @@
 <script>
-	import { fade } from 'svelte/transition';
 	import Toastify from 'toastify-js';
 	import { ask_ai_no_thread } from '$lib/api.js';
 	import { phaseHeaders } from '$lib/appGlobals.js';
@@ -7,9 +6,9 @@
 	import { handleNext, waitFor } from '$lib/utils.js';
 	import { dbStore } from '$lib/db.js';
 	let questions = [
-		'What do you think are your strengths when it comes to managing your time?',
-		'On what aspects of your time management do you think need improving?',
-		'Identify specific scenarios of when your time management is effective or challenging.'
+		`You’re overwhelmed with tasks and a looming deadline—how do your emotions affect your ability to prioritize?`,
+		`A teammate feels frustrated about an unfair workload—how can you address their concerns to improve teamwork?`,
+		`An urgent task disrupts your planned day—how will you manage your emotions to stay productive?`
 	];
 	let answer1 = '';
 	let answer2 = '';
@@ -18,7 +17,7 @@
 		const messages = [
 			{
 				role: 'system',
-				content: `You are an assistant that checks if the JSON object is proper. The keys in the object correspond to questions and the values are their answers. Respond with a JSON string with the key of message with the value of your feedback on the questions and their answers if they are correct or not. Also, there should be a key for result with the value being a boolean if the questions are answered properly. Explain why the answers are correct or incorrect. ENSURE THAT THE RESPONSE IS A JSON STRING.`
+				content: `The keys in the object correspond to questions and the values are their answers. Each key may contain multiple questions. Respond with a JSON string with the key of message with the value of your feedback on the questions and their answers if they are correct or not. Also, there should be a key for result with the value being a boolean if the questions are answered properly. Explain why the answers are correct or incorrect. Make sure that the response is a JSON string parsable by JavaScript's JSON.parse(). It shouldn't have '''json in it. `
 			},
 			{
 				role: 'user',
@@ -68,7 +67,7 @@
 </script>
 
 <div class="mb-16 flex flex-col gap-4">
-	<h1 class="mb-4 text-3xl font-bold">{phaseHeaders[1]}</h1>
+	<h1 class="mb-4 text-3xl font-bold">{phaseHeaders[2]}</h1>
 	<label for="question1">{questions[0]}</label>
 	<textarea name="question1" id="question1" bind:value={answer1}></textarea>
 	<label for="question2">{questions[1]}</label>

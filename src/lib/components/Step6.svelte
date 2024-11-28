@@ -3,20 +3,19 @@
 	import { phaseHeaders } from '$lib/appGlobals.js';
 	import { addTippy, aiStream } from '$lib/utils.js';
 	let message = $state('');
-	const prompt = `Overview of the four DISC styles (Dominance, Influence, Steadiness, Compliance) and how each approaches time management. Give only the answer. `;
+	const prompt = `Give practical tips for managing time effectively. Give me html string so i'll just render the html.`;
 	// aiStream(
 	// 	prompt,
 	// 	(newMessage) => (message += newMessage),
 	// 	(finalMessage) => (message = finalMessage)
 	// );
-	let infoContent =
-		'Overview of the four DISC styles (Dominance, Influence, Steadiness, Compliance) and how each approaches time management';
+	let infoContent = 'Practical tips for managing time effectively.';
 </script>
 
 <div class="mb-16 flex flex-col gap-4">
 	<h1 class="mb-4 text-3xl font-bold">{phaseHeaders[2]}</h1>
 	<Info {infoContent} />
 	<p>
-		{message}
+		{@html message}
 	</p>
 </div>

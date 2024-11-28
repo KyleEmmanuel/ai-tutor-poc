@@ -38,9 +38,10 @@
 
 <button
 	onclick={openDrawer}
-	class="button absolute left-2 top-[50%] translate-y-[-50%] transition-all {expanded
+	class="button fixed left-2 top-[50%] translate-y-[-50%] transition-all {expanded
 		? 'translate-x-[400px]'
 		: ''}"
+	style="z-index: 9999999;"
 >
 	{#if expanded}
 		<X size={24} />
@@ -52,10 +53,11 @@
 <style>
 	.drawer {
 		border-right: 1px solid rgb(192, 190, 190);
-		position: absolute;
+		position: fixed;
 		top: 0;
 		left: 0;
 		bottom: 0;
+		z-index: 99999999999;
 		background-color: white;
 	}
 	.button {

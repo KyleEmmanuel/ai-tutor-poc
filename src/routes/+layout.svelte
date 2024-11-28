@@ -5,6 +5,8 @@
 	import { onDestroy } from 'svelte';
 	import '../app.css';
 	import 'toastify-js/src/toastify.css';
+	// import 'tippy.js/themes/material.css';
+	import 'tippy.js/dist/tippy.css';
 	let { children } = $props();
 	let currentStep = $state();
 	const unsub = dbStore.subscribe((val) => {
