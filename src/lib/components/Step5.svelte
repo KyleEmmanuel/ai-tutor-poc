@@ -4,7 +4,7 @@
 	import { phaseHeaders } from '$lib/appGlobals.js';
 	import { globalLoader } from '$lib/loader.js';
 	import { handleNext, waitFor } from '$lib/utils.js';
-	import { dbStore } from '$lib/db.js';
+	import { dbStore, reflectionStore } from '$lib/db.js';
 	let questions = [
 		`You’re overwhelmed with tasks and a looming deadline—how do your emotions affect your ability to prioritize?`,
 		`A teammate feels frustrated about an unfair workload—how can you address their concerns to improve teamwork?`,
@@ -14,6 +14,14 @@
 	let answer2 = '';
 	let answer3 = '';
 	async function handleSubmit() {
+		const reflection = {
+			[questions[0]]: answer1,
+			[questions[1]]: answer2,
+			[questions[2]]: answer3
+		};
+		reflectionStore.update((val) => {
+			return { ...val, ...reflection };
+		});
 		const messages = [
 			{
 				role: 'system',
@@ -21,11 +29,7 @@
 			},
 			{
 				role: 'user',
-				content: JSON.stringify({
-					[questions[0]]: answer1,
-					[questions[1]]: answer2,
-					[questions[2]]: answer3
-				})
+				content: JSON.stringify(reflection)
 			}
 		];
 		try {

@@ -5,7 +5,7 @@
 	import { phaseHeaders } from '$lib/appGlobals.js';
 	import { globalLoader } from '$lib/loader.js';
 	import { handleNext, waitFor } from '$lib/utils.js';
-	import { dbStore } from '$lib/db.js';
+	import { dbStore, reflectionStore } from '$lib/db.js';
 	let questions = [
 		'What do you think are your strengths when it comes to managing your time?',
 		'On what aspects of your time management do you think need improving?',
@@ -15,6 +15,14 @@
 	let answer2 = '';
 	let answer3 = '';
 	async function handleSubmit() {
+		const reflection = {
+			[questions[0]]: answer1,
+			[questions[1]]: answer2,
+			[questions[2]]: answer3
+		};
+		reflectionStore.update((val) => {
+			return { ...val, ...reflection };
+		});
 		const messages = [
 			{
 				role: 'system',
@@ -22,11 +30,7 @@
 			},
 			{
 				role: 'user',
-				content: JSON.stringify({
-					[questions[0]]: answer1,
-					[questions[1]]: answer2,
-					[questions[2]]: answer3
-				})
+				content: JSON.stringify(reflection)
 			}
 		];
 		try {

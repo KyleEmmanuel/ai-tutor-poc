@@ -37,3 +37,5 @@ function localStorageStore(key, initialValue) {
 // Create the store
 export const dbStore = localStorageStore('db', { progress: 0, currentStep: 1 });
 export const stepsStore = localStorageStore('steps', [])
+export const planStore = localStorageStore('plan', null)
+export const reflectionStore = localStorageStore('reflection', null)

@@ -7,7 +7,7 @@
 	import Step1 from '$lib/components/Step1.svelte';
 	import Step2 from '$lib/components/Step2.svelte';
 	import Sidebar from '$lib/components/Sidebar.svelte';
-	import { dbStore, stepsStore } from '$lib/db.js';
+	import { dbStore, planStore, reflectionStore, stepsStore } from '$lib/db.js';
 	import { onDestroy } from 'svelte';
 	import Step3 from '$lib/components/Step3.svelte';
 	import { phaseHeaders } from '$lib/appGlobals.js';
@@ -15,6 +15,7 @@
 	import Step5 from '$lib/components/Step5.svelte';
 	import Step6 from '$lib/components/Step6.svelte';
 	import Step7 from '$lib/components/Step7.svelte';
+	import Step8 from '$lib/components/Step8.svelte';
 
 	let isPlaying = $state(true);
 	let isMicOn = $state(false);
@@ -34,9 +35,11 @@
 			{ number: 6, step: 'Practical tips for managing time effectively', done: false },
 			{ number: 7, step: 'Personal Action Plan', done: false }
 		],
-		[phaseHeaders[4]]: []
+		[phaseHeaders[4]]: [{ number: 8, step: 'Feedback and Consolidation', done: false }]
 	};
-	stepsStore.set(steps);
+	if ($stepsStore?.length === 0) {
+		stepsStore.set(steps);
+	}
 	resetDb();
 	let progress = $state(0);
 	let currentStep = $state(1);
@@ -136,9 +139,12 @@
 			// });
 			// return update;
 		});
+		stepsStore.set(steps);
+		planStore.set(null);
+		reflectionStore.set(null);
 	}
 
-	const stepComponents = [null, Step1, Step2, Step3, Step4, Step5, Step6, Step7];
+	const stepComponents = [null, Step1, Step2, Step3, Step4, Step5, Step6, Step7, Step8];
 	// localStorage.removeItem('db');
 	let StepComponent = $derived(stepComponents[currentStep]);
 </script>
@@ -155,7 +161,9 @@
 	<!-- Mic button and voice-over message -->
 	<div class="absolute right-8 top-8 flex items-center space-x-2">
 		{#if isMicOn}
-			<span in:fly class="text-sm font-medium text-blue-500">Voice over enabled</span>
+			<span in:fly class="fixed right-[4rem] top-[2rem] text-sm font-medium text-blue-500"
+				>Voice over enabled</span
+			>
 		{/if}
 		<button
 			onclick={toggleMic}
@@ -198,7 +206,7 @@
 	</div>
 
 	<!-- Chatbot icon and chat box -->
-	<div class="absolute bottom-20 right-20">
+	<div class="right-22 fixed bottom-20">
 		{#if isChatOpen}
 			<div class="mb-2 h-[400px] w-[400px] rounded-lg bg-white p-4 shadow-lg" in:fly>
 				<form onsubmit={handleChatSubmit} class="flex h-full flex-col">
