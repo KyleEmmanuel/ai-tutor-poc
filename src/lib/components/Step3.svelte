@@ -3,12 +3,12 @@
 	import { phaseHeaders } from '$lib/appGlobals.js';
 	import { addTippy, aiStream } from '$lib/utils.js';
 	let message = $state('');
-	const prompt = `Overview of the four DISC styles (Dominance, Influence, Steadiness, Compliance) and how each approaches time management. Give only the answer. `;
-	// aiStream(
-	// 	prompt,
-	// 	(newMessage) => (message += newMessage),
-	// 	(finalMessage) => (message = finalMessage)
-	// );
+	const prompt = `Overview of the four DISC styles (Dominance, Influence, Steadiness, Compliance) and how each approaches time management. Give only the answer. Do not add any remarks like sure, etc.`;
+	aiStream(
+		prompt,
+		(newMessage) => (message += newMessage),
+		(finalMessage) => (message = finalMessage)
+	);
 	let infoContent =
 		'Overview of the four DISC styles (Dominance, Influence, Steadiness, Compliance) and how each approaches time management';
 </script>

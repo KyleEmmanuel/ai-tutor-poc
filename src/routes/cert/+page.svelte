@@ -85,6 +85,7 @@
 	.header {
 		text-align: center;
 		padding-bottom: 2%;
+		padding-top: 2%;
 		position: relative;
 	}
 
@@ -139,7 +140,7 @@
 		justify-content: space-between;
 		align-items: flex-end;
 		position: absolute;
-		bottom: 6%;
+		bottom: 7%;
 		left: 0;
 		right: 0;
 		gap: 2%;

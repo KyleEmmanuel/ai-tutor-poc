@@ -12,7 +12,7 @@
 	let reflectionKeys = Object.keys($reflectionStore);
 	onMount(() => {
 		disableNext.set(true);
-		// handleSubmit();
+		handleSubmit();
 	});
 	async function handleSubmit() {
 		const messages = [

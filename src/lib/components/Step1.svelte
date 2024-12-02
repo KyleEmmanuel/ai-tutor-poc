@@ -1,14 +1,15 @@
 <script>
 	import { phaseHeaders } from '$lib/appGlobals.js';
+	import { aiStream } from '$lib/utils.js';
 	import Info from './Info.svelte';
 	let message = $state('');
-	const prompt = `What is the importance of time management and how it relates to DISC styles and Emotional Intelligence. Only give the answer.
+	const prompt = `What is the importance of time management and how it relates to DISC styles and Emotional Intelligence. Only give the answer. Do not add any remarks like sure, etc.
         `;
-	// aiStream(
-	// 	prompt,
-	// 	(newMessage) => (message += newMessage),
-	// 	(finalMessage) => (message = finalMessage)
-	// );
+	aiStream(
+		prompt,
+		(newMessage) => (message += newMessage),
+		(finalMessage) => (message = finalMessage)
+	);
 	let infoContent =
 		'The importance of time management and how it relates to DISC styles and Emotional Intelligence';
 </script>

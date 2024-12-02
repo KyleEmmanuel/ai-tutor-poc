@@ -5,7 +5,7 @@
 </script>
 
 <i
-	class="block w-fit"
+	class="block w-fit py-2"
 	use:addTippy={() => {
 		return { content: infoContent, placement: 'right' };
 	}}><Info /></i
