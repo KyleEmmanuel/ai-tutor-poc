@@ -2,9 +2,16 @@
 	import Toastify from 'toastify-js';
 	import { ask_ai_no_thread } from '$lib/api.js';
 	import { phaseHeaders } from '$lib/appGlobals.js';
-	import { globalLoader } from '$lib/loader.js';
+	import { disableNext, globalLoader } from '$lib/loader.js';
 	import { handleNext, waitFor } from '$lib/utils.js';
 	import { dbStore, reflectionStore } from '$lib/db.js';
+	import { onDestroy, onMount } from 'svelte';
+	onMount(() => {
+		disableNext.set(true);
+	});
+	onDestroy(() => {
+		disableNext.set(false);
+	});
 	let questions = [
 		`You’re overwhelmed with tasks and a looming deadline—how do your emotions affect your ability to prioritize?`,
 		`A teammate feels frustrated about an unfair workload—how can you address their concerns to improve teamwork?`,
@@ -34,7 +41,7 @@
 		];
 		try {
 			globalLoader.set(true);
-			const res = await ask_ai_no_thread({ messages });
+			const res = await ask_ai_no_thread({ messages, json: true });
 			const response = await res.json();
 			console.log(response);
 			const finalResponse = JSON.parse(response.response);

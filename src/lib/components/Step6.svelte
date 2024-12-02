@@ -13,7 +13,7 @@
 </script>
 
 <div class="mb-16 flex flex-col gap-4">
-	<h1 class="mb-4 text-3xl font-bold">{phaseHeaders[2]}</h1>
+	<h1 class="mb-4 text-3xl font-bold">{phaseHeaders[3]}</h1>
 	<Info {infoContent} />
 	<p>
 		{@html message}

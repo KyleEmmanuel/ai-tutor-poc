@@ -9,7 +9,14 @@
 	import steadiness from '$lib/assets/images/steadiness.webp';
 	import conscientiousness from '$lib/assets/images/conscientiousness.webp';
 	import { dbStore } from '$lib/db.js';
-	import { tick } from 'svelte';
+	import { onDestroy, onMount, tick } from 'svelte';
+	import { disableNext } from '$lib/loader.js';
+	onMount(() => {
+		disableNext.set(true);
+	});
+	onDestroy(() => {
+		disableNext.set(false);
+	});
 	let infoContent = 'Choose the DISC style that most suits you.';
 	let dominanceSummary = 'Bold and results-driven.';
 	let influenceSummary = 'Social and enthusiastic.';

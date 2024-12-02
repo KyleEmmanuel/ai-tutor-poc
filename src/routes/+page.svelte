@@ -16,7 +16,10 @@
 	import Step6 from '$lib/components/Step6.svelte';
 	import Step7 from '$lib/components/Step7.svelte';
 	import Step8 from '$lib/components/Step8.svelte';
+	import { aiStream } from '$lib/utils.js';
 
+	let messages = $state();
+	messages = [];
 	let isPlaying = $state(true);
 	let isMicOn = $state(false);
 	let isChatOpen = $state(false);
@@ -40,7 +43,7 @@
 	if ($stepsStore?.length === 0) {
 		stepsStore.set(steps);
 	}
-	resetDb();
+	// resetDb();
 	let progress = $state(0);
 	let currentStep = $state(1);
 
@@ -117,8 +120,30 @@
 
 	async function handleChatSubmit(e) {
 		e.preventDefault();
-		console.log('Chat message:', chatMessage);
-		chatMessage = '';
+		if (chatMessage.trim() !== '') {
+			messages.push({
+				sender: 'You',
+				text: chatMessage,
+				type: 'end'
+			});
+			messages.push({
+				sender: 'AI Tutor',
+				text: '',
+				type: 'start'
+			});
+			aiStream(
+				chatMessage,
+				(newMessage) => {
+					messages[messages.length - 1].text += newMessage;
+				},
+				(finalMessage) => {
+					messages[messages.length - 1].text = finalMessage;
+				}
+			);
+			chatMessage = '';
+		}
+		// console.log('Chat message:', chatMessage);
+		// chatMessage = '';
 	}
 
 	function resetDb() {
@@ -132,12 +157,6 @@
 				});
 			});
 			return val;
-
-			// const update = val.map((step) => {
-			// 	step.done = false;
-			// 	return step;
-			// });
-			// return update;
 		});
 		stepsStore.set(steps);
 		planStore.set(null);
@@ -206,17 +225,32 @@
 	</div>
 
 	<!-- Chatbot icon and chat box -->
-	<div class="right-22 fixed bottom-20">
+	<div class="fixed bottom-20 right-20">
 		{#if isChatOpen}
-			<div class="mb-2 h-[400px] w-[400px] rounded-lg bg-white p-4 shadow-lg" in:fly>
-				<form onsubmit={handleChatSubmit} class="flex h-full flex-col">
+			<div class="relative mb-2 h-[400px] w-[400px] rounded-lg bg-white p-4 shadow-lg" in:fly>
+				<div class="flex h-full max-h-[80%] flex-col overflow-y-auto">
+					<!-- Chat Messages -->
+					{#each messages as message}
+						<div class={`chat chat-${message.type}`}>
+							<div class="chat-header">
+								{message.sender}
+							</div>
+							<div class="chat-bubble">{message.text}</div>
+						</div>
+					{/each}
+				</div>
+
+				<!-- Chat Input -->
+				<form
+					onsubmit={handleChatSubmit}
+					class="absolute bottom-0 left-0 right-0 mt-2 flex h-1/5 flex-col"
+				>
 					<textarea
-						type="text"
 						bind:value={chatMessage}
-						class="mb-2 w-full grow rounded border p-2"
+						class="mb-2 w-full grow resize-none rounded border-0 p-2"
 						placeholder="Type your message..."
 					></textarea>
-					<button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white"> Send </button>
+					<button type="submit" class="rounded bg-blue-500 px-4 py-2 text-white">Send</button>
 				</form>
 			</div>
 		{/if}

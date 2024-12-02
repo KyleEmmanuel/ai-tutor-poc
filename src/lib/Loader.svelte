@@ -9,7 +9,7 @@
 <style>
 	/* From Uiverse.io by adamgiebl */
 	.dots-container {
-		position: absolute; /* or fixed, depending on the use case */
+		position: fixed; /* or fixed, depending on the use case */
 		top: 50%; /* Position it at 50% of the parent height */
 		left: 50%; /* Position it at 50% of the parent width */
 		transform: translate(-50%, -50%); /* Offset by half its own width and height */

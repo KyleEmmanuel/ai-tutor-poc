@@ -3,9 +3,16 @@
 	import Toastify from 'toastify-js';
 	import { ask_ai_no_thread } from '$lib/api.js';
 	import { phaseHeaders } from '$lib/appGlobals.js';
-	import { globalLoader } from '$lib/loader.js';
+	import { disableNext, globalLoader } from '$lib/loader.js';
 	import { handleNext, waitFor } from '$lib/utils.js';
 	import { dbStore, reflectionStore } from '$lib/db.js';
+	import { onDestroy, onMount } from 'svelte';
+	onMount(() => {
+		disableNext.set(true);
+	});
+	onDestroy(() => {
+		disableNext.set(false);
+	});
 	let questions = [
 		'What do you think are your strengths when it comes to managing your time?',
 		'On what aspects of your time management do you think need improving?',
@@ -26,7 +33,7 @@
 		const messages = [
 			{
 				role: 'system',
-				content: `You are an assistant that checks if the JSON object is proper. The keys in the object correspond to questions and the values are their answers. Respond with a JSON string with the key of message with the value of your feedback on the questions and their answers if they are correct or not. Also, there should be a key for result with the value being a boolean if the questions are answered properly. Explain why the answers are correct or incorrect. ENSURE THAT THE RESPONSE IS A JSON STRING.`
+				content: `You are an assistant that checks if the JSON object is proper. The keys in the object correspond to questions and the values are their answers. Response with a JSON object containing the properties message and result, with message containing your feedback to the questions-answers provided and the result being a boolean if the answers provided correctly answer the questions.`
 			},
 			{
 				role: 'user',
@@ -35,7 +42,7 @@
 		];
 		try {
 			globalLoader.set(true);
-			const res = await ask_ai_no_thread({ messages });
+			const res = await ask_ai_no_thread({ messages, json: true });
 			const response = await res.json();
 			console.log(response);
 			const finalResponse = JSON.parse(response.response);
