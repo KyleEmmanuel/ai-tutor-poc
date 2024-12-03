@@ -35,10 +35,10 @@
 		padding: 0;
 		font-family: 'Montserrat', sans-serif;
 		height: 100%;
-		display: flex;
+		display: flex !important;
 		justify-content: center;
 		align-items: center;
-		background-color: #f0f0f0;
+		background-color: #f0f0f0 !important;
 	}
 
 	.certificate-container {

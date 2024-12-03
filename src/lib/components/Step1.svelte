@@ -3,7 +3,7 @@
 	import { aiStream } from '$lib/utils.js';
 	import Info from './Info.svelte';
 	let message = $state('');
-	const prompt = `What is the importance of time management and how it relates to DISC styles and Emotional Intelligence. Only give the answer. Do not add any remarks like sure, etc.
+	const prompt = `What is the importance of time management and how it relates to DISC styles and Emotional Intelligence. Only give the answer. Do not add any remarks like sure, etc. Make the answer at least 5 paragraphs.
         `;
 	aiStream(
 		prompt,

@@ -161,6 +161,7 @@
 		stepsStore.set(steps);
 		planStore.set(null);
 		reflectionStore.set(null);
+		disableNext.set(false);
 	}
 
 	const stepComponents = [null, Step1, Step2, Step3, Step4, Step5, Step6, Step7, Step8];
@@ -180,7 +181,7 @@
 	<!-- Mic button and voice-over message -->
 	<div class="absolute right-8 top-8 flex items-center space-x-2">
 		{#if isMicOn}
-			<span in:fly class="fixed right-[4rem] top-[2rem] text-sm font-medium text-blue-500"
+			<span in:fly class="fixed right-[6rem] top-[2rem] text-sm font-medium text-blue-500"
 				>Voice over enabled</span
 			>
 		{/if}

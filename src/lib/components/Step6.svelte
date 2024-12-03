@@ -3,7 +3,7 @@
 	import { phaseHeaders } from '$lib/appGlobals.js';
 	import { addTippy, aiStream } from '$lib/utils.js';
 	let message = $state('');
-	const prompt = `Give practical tips for managing time effectively. Give me html string so i'll just render the html. Only give the answer. Do not add any remarks like sure, etc.`;
+	const prompt = `Give practical tips for managing time effectively. Give me html string so i'll just render the html. Only give the answer. Do not add any remarks like sure, etc. Make the answer at least 5 paragraphs.`;
 	aiStream(
 		prompt,
 		(newMessage) => (message += newMessage),
