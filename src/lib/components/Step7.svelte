@@ -2,11 +2,18 @@
 	import Toastify from 'toastify-js';
 	import { ask_ai_no_thread } from '$lib/api.js';
 	import { phaseHeaders } from '$lib/appGlobals.js';
-	import { globalLoader } from '$lib/loader.js';
+	import { disableNext, globalLoader } from '$lib/loader.js';
 	import { handleNext, waitFor } from '$lib/utils.js';
 	import { dbStore, planStore } from '$lib/db.js';
 	import { ArrowRight } from 'lucide-svelte';
 	import Info from './Info.svelte';
+	import { onDestroy, onMount } from 'svelte';
+	onMount(() => {
+		disableNext.set(true);
+	});
+	onDestroy(() => {
+		disableNext.set(false);
+	});
 	let plan = $planStore
 		? $planStore
 		: {

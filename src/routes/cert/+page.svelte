@@ -3,6 +3,22 @@
 	import qr from '$lib/assets/images/qr.png';
 </script>
 
+<svelte:head>
+	<style>
+		body,
+		html {
+			margin: 0;
+			padding: 0;
+			font-family: 'Montserrat', sans-serif;
+			height: 100%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			background-color: #f0f0f0;
+		}
+	</style>
+</svelte:head>
+
 <div class="certificate-container">
 	<div class="certificate">
 		<div class="border"></div>
@@ -29,17 +45,6 @@
 
 <style>
 	@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;700&family=Montserrat:wght@400;700&display=swap');
-
-	:global(body, html) {
-		margin: 0;
-		padding: 0;
-		font-family: 'Montserrat', sans-serif;
-		height: 100%;
-		display: flex !important;
-		justify-content: center;
-		align-items: center;
-		background-color: #f0f0f0 !important;
-	}
 
 	.certificate-container {
 		width: 95%;

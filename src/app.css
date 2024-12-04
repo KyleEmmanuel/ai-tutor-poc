@@ -10,7 +10,7 @@ li {
     @apply list-disc
 }
 
-body, html {
+/* body, html {
     background-color: white;
     display: block;
-}
+} */
