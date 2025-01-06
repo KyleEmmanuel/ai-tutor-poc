@@ -179,7 +179,7 @@
 	{/key} -->
 
 	<!-- Mic button and voice-over message -->
-	<div class="absolute right-8 top-8 flex items-center space-x-2">
+	<!-- <div class="absolute right-8 top-8 flex items-center space-x-2">
 		{#if isMicOn}
 			<span in:fly class="fixed right-[6rem] top-[2rem] text-sm font-medium text-blue-500"
 				>Voice over enabled</span
@@ -192,7 +192,7 @@
 		>
 			<Mic size={24} />
 		</button>
-	</div>
+	</div> -->
 
 	<!-- next button -->
 	{#if !$globalLoader && !$disableNext}

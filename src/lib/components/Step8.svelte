@@ -10,14 +10,14 @@
 	import { ask_ai_no_thread } from '$lib/api.js';
 	console.log({ planStore: $planStore, reflectionStore: $reflectionStore });
 	let reflectionKeys = Object.keys($reflectionStore);
-	// onMount(() => {
-	// 	window.scrollTo({
-	// 		top: 0,
-	// 		behavior: 'smooth'
-	// 	});
-	// 	disableNext.set(true);
-	// 	handleSubmit();
-	// });
+	onMount(() => {
+		window.scrollTo({
+			top: 0,
+			behavior: 'smooth'
+		});
+		disableNext.set(true);
+		handleSubmit();
+	});
 	async function handleSubmit() {
 		const messages = [
 			{
